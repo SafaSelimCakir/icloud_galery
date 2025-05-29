@@ -1,0 +1,8 @@
+<form method="post">
+  {% csrf_token %}
+  <label>Kullanıcı Adı:</label>
+  <input type="text" name="username">
+  <label>Şifre:</label>
+  <input type="password" name="password">
+  <button type="submit">Giriş Yap</button>
+</form>

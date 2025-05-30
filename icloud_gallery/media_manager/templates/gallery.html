@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>iCloud Galeri</title>
+    <style>
+        .media-item {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        img, video {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>iCloud Medya Galerisi</h1>
+
+    <p>Hoş geldiniz, {{ request.user.username }}! <a href="{% url 'logout' %}">Çıkış Yap</a></p>
+
+    <!-- Medya Yükleme Formu -->
+    <form action="{% url 'upload_media' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" required>
+        <button type="submit">Yükle</button>
+    </form>
+
+    <!-- Seçili Medyaları Silme Formu -->
+    <form id="deleteForm" action="{% url 'delete_selected_media' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Seçilenleri Sil</button>
+        <div>
+            {% if media_items %}
+                {% for item in media_items %}
+                    <div class="media-item">
+                        <input type="checkbox" name="media_ids[]" value="{{ item.id }}">
+                        {% if item.type == 'photo' %}
+                            <img src="{{ item.url }}" alt="Photo">
+                        {% elif item.type == 'video' %}
+                            <video controls>
+                                <source src="{{ item.url }}" type="video/mp4">
+                            </video>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Hiç medya bulunamadı.</p>
+            {% endif %}
+        </div>
+    </form>
+</body>
+</html>

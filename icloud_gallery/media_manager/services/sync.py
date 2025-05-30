@@ -3,9 +3,10 @@ from media_manager.models import Media
 from django.contrib.auth import get_user_model
 
 def sync_media(user):
-    # Kullanıcıya ait iCloud kimlik bilgileri olduğunu varsayalım
-    username = user.email  # örnek
-    password = user.profile.icloud_password  # örnek alan
+    username = user.icloud_email
+    password = user.icloud_password
+    client = iCloudClient(username, password)
+    media_list = client.fetch_all_media()
 
     client = iCloudClient(username, password)
     media_list = client.fetch_all_media()

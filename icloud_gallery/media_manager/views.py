@@ -67,13 +67,41 @@ def gallery_view(request):
 
     email = request.session.get('icloud_email')
     password = request.session.get('icloud_password')
+    api = PyiCloudService(email, password)
+
+    media_items = []
 
     try:
-        api = PyiCloudService(email, password)
         photos = api.photos.all
-        return render(request, 'gallery.html', {'photos': photos})
+        for photo in photos:
+            try:
+                media_items.append({
+                    'id': photo.asset_id,
+                    'url': photo.download().url,
+                    'type': 'photo'
+                })
+            except Exception:
+                continue
     except Exception as e:
-        return HttpResponse(f"iCloud bağlantı hatası: {e}", status=500)
+        print("Fotoğraflar alınamadı:", e)
+
+    try:
+        videos = api.photos.videos
+        for video in videos:
+            try:
+                media_items.append({
+                    'id': video.asset_id,
+                    'url': video.download().url,
+                    'type': 'video'
+                })
+            except Exception:
+                continue
+    except Exception as e:
+        print("Videolar alınamadı:", e)
+
+    return render(request, 'gallery.html', {'media_items': media_items})
+
+
 
 
 @require_POST
